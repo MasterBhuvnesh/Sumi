@@ -21,7 +21,7 @@ function TabBarIcon(props: {
   return React.cloneElement(props.icon, {
     size: 25,
     color: props.color,
-    style: { marginBottom: -3 },
+    style: { marginBottom: -3, padding: 10 },
   });
 }
 
@@ -41,6 +41,10 @@ export default function TabLayout() {
         name="index"
         options={{
           title: "Home",
+          tabBarShowLabel: false,
+          tabBarLabelStyle: {
+            fontFamily: "Poppins",
+          },
           tabBarIcon: ({ color }) => (
             <TabBarIcon
               icon={<HomeIcon />} // Use HomeIcon for the Home tab
@@ -68,7 +72,11 @@ export default function TabLayout() {
       <Tabs.Screen
         name="two"
         options={{
-          title: "Profile", // Rename the title to "Profile"
+          title: "Profile",
+          tabBarShowLabel: false,
+          tabBarLabelStyle: {
+            fontFamily: "Poppins",
+          },
           tabBarIcon: ({ color }) => (
             <TabBarIcon
               icon={<UserCircleIcon />} // Use UserCircleIcon for the Profile tab
