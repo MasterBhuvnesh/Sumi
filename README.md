@@ -42,3 +42,5 @@ To download new package versions, run:
 ```bash
 npx expo install --fix
 ```
+
+npx expo install @supabase/supabase-js @react-native-async-storage/async-storage

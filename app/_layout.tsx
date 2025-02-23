@@ -5,14 +5,17 @@ import {
   ThemeProvider,
 } from "@react-navigation/native";
 import { useFonts } from "expo-font";
-import { Stack } from "expo-router";
+import { router, Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
 import "react-native-reanimated";
 
 import { useColorScheme } from "@/components/useColorScheme";
 import { StatusBar } from "expo-status-bar";
+import { AuthProvider } from "@/providers/AuthProvider";
 
+import * as Linking from "expo-linking";
+import { supabase } from "@/lib/supabase";
 export {
   // Catch any errors thrown by the Layout component.
   ErrorBoundary,
@@ -44,6 +47,33 @@ export default function RootLayout() {
     }
   }, [loaded]);
 
+  useEffect(() => {
+    const handleDeepLink = (event: { url: string }) => {
+      const url = new URL(event.url);
+      if (url.pathname === "/reset-password") {
+        const accessToken = url.searchParams.get("access_token");
+        const refreshToken = url.searchParams.get("refresh_token");
+
+        if (accessToken && refreshToken) {
+          supabase.auth
+            .setSession({
+              access_token: accessToken,
+              refresh_token: refreshToken,
+            })
+            .then(() => {
+              router.replace("/(auth)/reset-password");
+            });
+        }
+      }
+    };
+
+    const subscription = Linking.addEventListener("url", handleDeepLink);
+
+    return () => {
+      subscription.remove();
+    };
+  }, []);
+
   if (!loaded) {
     return null;
   }
@@ -56,17 +86,19 @@ function RootLayoutNav() {
 
   return (
     <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
-      <StatusBar style="auto" />
-      <Stack>
-        <Stack.Screen
-          name="(tabs)"
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          name="modal"
-          options={{ presentation: "modal" }}
-        />
-      </Stack>
+      <AuthProvider>
+        <StatusBar style="auto" />
+        <Stack>
+          <Stack.Screen
+            name="(tabs)"
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="modal"
+            options={{ presentation: "modal" }}
+          />
+        </Stack>
+      </AuthProvider>
     </ThemeProvider>
   );
 }
