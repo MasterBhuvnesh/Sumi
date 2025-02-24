@@ -6,18 +6,13 @@ import Colors from "@/constants/Colors";
 import { useColorScheme } from "@/components/useColorScheme";
 import { useClientOnlyValue } from "@/components/useClientOnlyValue";
 
-// Import Heroicons
 import {
   HomeIcon,
   UserCircleIcon,
   InformationCircleIcon,
 } from "react-native-heroicons/outline";
 
-// Custom TabBarIcon component using Heroicons
-function TabBarIcon(props: {
-  icon: React.ReactElement; // Ensure the icon is a ReactElement
-  color: string;
-}) {
+function TabBarIcon(props: { icon: React.ReactElement; color: string }) {
   return React.cloneElement(props.icon, {
     size: 25,
     color: props.color,
@@ -32,9 +27,26 @@ export default function TabLayout() {
     <Tabs
       screenOptions={{
         tabBarActiveTintColor: Colors[colorScheme ?? "light"].tint,
-        // Disable the static render of the header on web
-        // to prevent a hydration error in React Navigation v6.
         headerShown: useClientOnlyValue(false, true),
+        tabBarStyle: {
+          position: "absolute",
+          marginTop: 10,
+          borderTopWidth: 1,
+          borderTopColor: Colors[colorScheme ?? "light"].border,
+          elevation: 0,
+          backgroundColor: Colors[colorScheme ?? "light"].background,
+        },
+        tabBarPosition: "bottom",
+        tabBarButton: (props) => (
+          <Pressable
+            {...props}
+            android_ripple={{ color: "transparent" }} // Disable ripple effect on Android
+            style={({ pressed }) => [
+              props.style,
+              { opacity: pressed ? 0.7 : 1 }, // Optional: Add a slight opacity change on press
+            ]}
+          />
+        ),
       }}
     >
       <Tabs.Screen
@@ -47,18 +59,18 @@ export default function TabLayout() {
           },
           tabBarIcon: ({ color }) => (
             <TabBarIcon
-              icon={<HomeIcon />} // Use HomeIcon for the Home tab
+              icon={<HomeIcon />}
               color={color}
             />
           ),
           headerRight: () => (
             <Link
-              href="/modal"
+              href="/info"
               asChild
             >
               <Pressable>
                 {({ pressed }) => (
-                  <InformationCircleIcon // Use InformationCircleIcon for the header
+                  <InformationCircleIcon
                     size={25}
                     color={Colors[colorScheme ?? "light"].text}
                     style={{ marginRight: 15, opacity: pressed ? 0.5 : 1 }}
@@ -70,7 +82,7 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="two"
+        name="profile"
         options={{
           title: "Profile",
           tabBarShowLabel: false,
@@ -79,7 +91,7 @@ export default function TabLayout() {
           },
           tabBarIcon: ({ color }) => (
             <TabBarIcon
-              icon={<UserCircleIcon />} // Use UserCircleIcon for the Profile tab
+              icon={<UserCircleIcon />}
               color={color}
             />
           ),

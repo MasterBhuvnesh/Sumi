@@ -5,7 +5,7 @@ import {
   ThemeProvider,
 } from "@react-navigation/native";
 import { useFonts } from "expo-font";
-import { router, Stack } from "expo-router";
+import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
 import "react-native-reanimated";
@@ -14,8 +14,6 @@ import { useColorScheme } from "@/components/useColorScheme";
 import { StatusBar } from "expo-status-bar";
 import { AuthProvider } from "@/providers/AuthProvider";
 
-import * as Linking from "expo-linking";
-import { supabase } from "@/lib/supabase";
 export {
   // Catch any errors thrown by the Layout component.
   ErrorBoundary,
@@ -33,6 +31,7 @@ export default function RootLayout() {
   const [loaded, error] = useFonts({
     SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
     Poppins: require("../assets/fonts/Poppins-Regular.ttf"),
+    Sigmar: require("../assets/fonts/Sigmar-Regular.ttf"),
     ...FontAwesome.font,
   });
 
@@ -46,33 +45,6 @@ export default function RootLayout() {
       SplashScreen.hideAsync();
     }
   }, [loaded]);
-
-  useEffect(() => {
-    const handleDeepLink = (event: { url: string }) => {
-      const url = new URL(event.url);
-      if (url.pathname === "/reset-password") {
-        const accessToken = url.searchParams.get("access_token");
-        const refreshToken = url.searchParams.get("refresh_token");
-
-        if (accessToken && refreshToken) {
-          supabase.auth
-            .setSession({
-              access_token: accessToken,
-              refresh_token: refreshToken,
-            })
-            .then(() => {
-              router.replace("/(auth)/reset-password");
-            });
-        }
-      }
-    };
-
-    const subscription = Linking.addEventListener("url", handleDeepLink);
-
-    return () => {
-      subscription.remove();
-    };
-  }, []);
 
   if (!loaded) {
     return null;
@@ -94,7 +66,7 @@ function RootLayoutNav() {
             options={{ headerShown: false }}
           />
           <Stack.Screen
-            name="modal"
+            name="info"
             options={{ presentation: "modal" }}
           />
         </Stack>

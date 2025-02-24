@@ -83,7 +83,7 @@ export default function Login() {
             borderBottomWidth: 1,
             borderColor: "#ccc",
             borderRadius: 5,
-            width: "80%",
+            width: "90%",
             fontFamily: "Poppins",
             color: Colors[theme ?? "light"].text,
           },
@@ -103,7 +103,7 @@ export default function Login() {
             borderBottomWidth: 1,
             borderColor: "#ccc",
             borderRadius: 5,
-            width: "80%",
+            width: "90%",
             fontFamily: "Poppins",
             color: Colors[theme ?? "light"].text,
           },
@@ -115,7 +115,7 @@ export default function Login() {
         disabled={loading}
         style={{
           backgroundColor: Colors[theme ?? "light"].text,
-          width: "80%",
+          width: "90%",
           padding: 10,
           borderRadius: 5,
           alignItems: "center",
@@ -134,7 +134,7 @@ export default function Login() {
       </Pressable>
 
       <TouchableOpacity
-        onPress={() => router.push("/(auth)/signup")}
+        onPress={() => router.push("/signup")}
         style={{
           marginTop: 20,
         }}
