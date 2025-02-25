@@ -26,7 +26,13 @@ export default function ProfileScreen() {
     const fetchUserData = async () => {
       const {
         data: { user },
+        error: authError,
       } = await supabase.auth.getUser();
+
+      if (authError) {
+        console.error("Error fetching authenticated user:", authError);
+        return;
+      }
 
       if (user) {
         const { data, error } = await supabase
@@ -40,6 +46,12 @@ export default function ProfileScreen() {
           return;
         }
 
+        if (!data) {
+          console.log("No user data found for the authenticated user");
+          // Handle the case where no user data is found
+          return;
+        }
+
         setUserData(data);
       }
     };
@@ -50,6 +62,16 @@ export default function ProfileScreen() {
   if (!userData) {
     return (
       <View style={styles.container}>
+        <Stack.Screen
+          options={{
+            headerShown: false,
+            headerTitleStyle: { fontFamily: "SpaceMono" },
+            headerStyle: {
+              backgroundColor: Colors[theme ?? "light"].background,
+            },
+            headerTintColor: Colors[theme ?? "light"].text,
+          }}
+        />
         <MonoText>Loading...</MonoText>
       </View>
     );
@@ -154,6 +176,32 @@ export default function ProfileScreen() {
           </View>
         </View>
       </View>
+
+      {/* Update Botton */}
+
+      <Pressable
+        onPress={() => {
+          router.push("/edit-profile");
+        }}
+        style={{
+          backgroundColor: Colors[theme ?? "light"].text,
+          width: "50%",
+          padding: 10,
+          borderRadius: 15,
+          alignItems: "center",
+          justifyContent: "center",
+          marginTop: 20,
+        }}
+      >
+        <MonoText
+          style={{
+            borderRadius: 5,
+            color: Colors[theme ?? "light"].background,
+          }}
+        >
+          Update
+        </MonoText>
+      </Pressable>
 
       {/* Logout Button */}
 

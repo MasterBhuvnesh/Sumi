@@ -16,17 +16,29 @@ export default function Signup() {
 
   const handleSignup = async () => {
     setLoading(true);
-    const { error } = await supabase.auth.signUp({
+    const { error: signUpError } = await supabase.auth.signUp({
       email,
       password,
     });
 
-    if (error) {
-      Alert.alert("Error", error.message);
-    } else {
-      Alert.alert("Success", "Check your email to confirm your account!");
-      router.replace("/(auth)/login");
+    if (signUpError) {
+      Alert.alert("Error", signUpError.message);
+      setLoading(false);
+      return;
     }
+
+    // Automatically log in the user after successful signup
+    const { error: signInError } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
+
+    if (signInError) {
+      Alert.alert("Error", signInError.message);
+    } else {
+      router.replace("/edit-profile"); // Redirect to the main app screen
+    }
+
     setLoading(false);
   };
 

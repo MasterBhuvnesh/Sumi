@@ -69,6 +69,10 @@ function RootLayoutNav() {
             name="info"
             options={{ presentation: "modal" }}
           />
+          <Stack.Screen
+            name="edit-profile"
+            options={{ presentation: "modal", headerShown: false }}
+          />
         </Stack>
       </AuthProvider>
     </ThemeProvider>
