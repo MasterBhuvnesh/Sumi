@@ -58,3 +58,57 @@ CREATE OR REPLACE TRIGGER on_auth_user_created
 AFTER INSERT ON auth.users
 FOR EACH ROW
 EXECUTE FUNCTION public.handle_new_user();
+
+
+-- Create the quotes table
+CREATE TABLE quotes (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY, -- Auto-generated UUID
+  text TEXT NOT NULL, -- The text of the quote
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(), -- Timestamp when the quote was created
+  user_id UUID REFERENCES auth.users ON DELETE CASCADE -- Link to the user who created the quote
+);
+
+-- Enable Row Level Security (RLS) for the quotes table
+ALTER TABLE quotes ENABLE ROW LEVEL SECURITY;
+
+-- Policy: Allow anyone to read quotes
+CREATE POLICY "Allow public read access to quotes" ON quotes
+FOR SELECT
+TO public
+USING (true); -- Anyone can read quotes
+
+-- Policy: Allow authenticated users to insert quotes
+CREATE POLICY "Allow authenticated users to insert quotes" ON quotes
+FOR INSERT
+TO authenticated
+WITH CHECK (true); -- Authenticated users can insert quotes
+
+-- Policy: Allow users to update their own quotes
+CREATE POLICY "Allow users to update their own quotes" ON quotes
+FOR UPDATE
+TO authenticated
+USING (auth.uid() = user_id) -- Users can only update their own quotes
+WITH CHECK (auth.uid() = user_id);
+
+-- Policy: Allow users to delete their own quotes
+CREATE POLICY "Allow users to delete their own quotes" ON quotes
+FOR DELETE
+TO authenticated
+USING (auth.uid() = user_id); -- Users can only delete their own quotes
+
+
+
+-- Turn on Real Time 
+-- Enable realtime for the 'users' table
+ALTER TABLE users
+  ENABLE REPLICA ROW LEVEL SECURITY;
+
+ALTER PUBLICATION supabase_realtime
+  ADD TABLE users;
+
+-- Enable realtime for the 'quotes' table
+ALTER TABLE quotes
+  ENABLE REPLICA ROW LEVEL SECURITY;
+
+ALTER PUBLICATION supabase_realtime
+  ADD TABLE quotes;

@@ -22,42 +22,62 @@ export default function ProfileScreen() {
   const theme = useColorScheme();
   const [userData, setUserData] = useState<any>(null);
 
-  useEffect(() => {
-    const fetchUserData = async () => {
-      const {
-        data: { user },
-        error: authError,
-      } = await supabase.auth.getUser();
+  const fetchUserData = async () => {
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser();
 
-      if (authError) {
-        console.error("Error fetching authenticated user:", authError);
+    if (authError) {
+      console.error("Error fetching authenticated user:", authError);
+      return;
+    }
+
+    if (user) {
+      const { data, error } = await supabase
+        .from("users")
+        .select("*")
+        .eq("id", user.id)
+        .single();
+
+      if (error) {
+        console.error("Error fetching user data:", error);
         return;
       }
 
-      if (user) {
-        const { data, error } = await supabase
-          .from("users")
-          .select("*")
-          .eq("id", user.id)
-          .single();
-
-        if (error) {
-          console.error("Error fetching user data:", error);
-          return;
-        }
-
-        if (!data) {
-          console.log("No user data found for the authenticated user");
-          // Handle the case where no user data is found
-          return;
-        }
-
-        setUserData(data);
+      if (!data) {
+        console.log("No user data found for the authenticated user");
+        // Handle the case where no user data is found
+        return;
       }
-    };
 
+      setUserData(data);
+    }
+  };
+
+  useEffect(() => {
     fetchUserData();
-  }, []);
+
+    // Subscribe to realtime changes in the "users" table
+    const subscription = supabase
+      .channel("users")
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "users" }, // Listen to all changes (insert, update, delete) on the "users" table
+        (payload) => {
+          // If the updated user is the current user, refresh the data
+          if ("id" in payload.new && payload.new.id === userData?.id) {
+            fetchUserData();
+          }
+        }
+      )
+      .subscribe();
+
+    // Cleanup subscription on component unmount
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [userData?.id]); // Only re-run the effect if the user ID changes
 
   if (!userData) {
     return (
@@ -159,6 +179,7 @@ export default function ProfileScreen() {
                 borderWidth: 1,
                 borderColor: Colors[theme ?? "light"].text,
               }}
+              resizeMode="cover"
             />
           )}
 
@@ -177,8 +198,32 @@ export default function ProfileScreen() {
         </View>
       </View>
 
-      {/* Update Botton */}
+      {/* Add Qoute Button */}
+      <Pressable
+        onPress={() => {
+          router.push("/add-quote");
+        }}
+        style={{
+          backgroundColor: Colors[theme ?? "light"].text,
+          width: "50%",
+          padding: 10,
+          borderRadius: 15,
+          alignItems: "center",
+          justifyContent: "center",
+          marginTop: 20,
+        }}
+      >
+        <MonoText
+          style={{
+            borderRadius: 5,
+            color: Colors[theme ?? "light"].background,
+          }}
+        >
+          Add Quote
+        </MonoText>
+      </Pressable>
 
+      {/* Update Button */}
       <Pressable
         onPress={() => {
           router.push("/edit-profile");
@@ -204,7 +249,6 @@ export default function ProfileScreen() {
       </Pressable>
 
       {/* Logout Button */}
-
       <Pressable
         onPress={handleLogout}
         style={{

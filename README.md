@@ -44,3 +44,8 @@ npx expo install --fix
 ```
 
 npx expo install @supabase/supabase-js @react-native-async-storage/async-storage
+
+npm install @google/generative-ai
+
+expo notification left
+and in home page als oshow who have written the blog
