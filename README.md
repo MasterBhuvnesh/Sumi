@@ -43,9 +43,21 @@ To download new package versions, run:
 npx expo install --fix
 ```
 
+To install additional packages, run:
+
+```bash
 npx expo install @supabase/supabase-js @react-native-async-storage/async-storage
-
 npm install @google/generative-ai
+```
 
-expo notification left
-and in home page als oshow who have written the blog
+## Notifications
+
+To enable notifications, run:
+
+```bash
+expo notification
+```
+
+## Home Page
+
+On the home page, display the authors of the blogs.
