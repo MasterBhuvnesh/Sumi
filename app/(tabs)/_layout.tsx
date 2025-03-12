@@ -10,6 +10,7 @@ import {
   HomeIcon,
   UserCircleIcon,
   InformationCircleIcon,
+  StarIcon,
 } from "react-native-heroicons/outline";
 
 function TabBarIcon(props: { icon: React.ReactElement; color: string }) {

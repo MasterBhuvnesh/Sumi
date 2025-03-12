@@ -37,7 +37,6 @@ export default function Index() {
   useEffect(() => {
     fetchQuotes();
 
-    // Subscribe to realtime changes
     const subscription = supabase
       .channel("quotes")
       .on(
@@ -69,6 +68,7 @@ export default function Index() {
         alignItems: "center",
         justifyContent: "center",
         backgroundColor: Colors[theme ?? "light"].background,
+        marginBottom: 50,
       }}
     >
       <Stack.Screen

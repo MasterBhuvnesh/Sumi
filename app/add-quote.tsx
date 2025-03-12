@@ -25,7 +25,6 @@ export default function AddQuoteScreen() {
     setLoading(true);
 
     try {
-      // Call the Gemini API to enhance the quote
       const response = await fetch("/api/ai", {
         method: "POST",
         headers: {
@@ -39,7 +38,7 @@ export default function AddQuoteScreen() {
       }
 
       const data = await response.json();
-      setEnhancedQuote(data.enhancedQuote); // Set the enhanced quote
+      setEnhancedQuote(data.enhancedQuote);
     } catch (error) {
       console.error("Error enhancing quote:", error);
       Alert.alert("Error", "Failed to enhance quote. Please try again.");
@@ -89,7 +88,6 @@ export default function AddQuoteScreen() {
         backgroundColor: Colors[theme ?? "light"].background,
       }}
     >
-      {" "}
       <Stack.Screen options={{ headerShown: false }} />
       <View
         style={{
@@ -148,8 +146,8 @@ export default function AddQuoteScreen() {
             </PoppinsText>
           </Pressable>
           <Pressable
-            onPress={() => handleSaveQuote(quote)} // Save the original quote
-            disabled={!quote || loading} // Disable if no quote or loading
+            onPress={() => handleSaveQuote(quote)}
+            disabled={!quote || loading}
             style={{
               backgroundColor: Colors[theme ?? "light"].text,
               padding: 10,
@@ -192,7 +190,7 @@ export default function AddQuoteScreen() {
               {enhancedQuote}
             </MonoText>
             <Pressable
-              onPress={() => handleSaveQuote(enhancedQuote)} // Save the enhanced quote
+              onPress={() => handleSaveQuote(enhancedQuote)}
               style={{
                 backgroundColor: Colors[theme ?? "light"].text,
                 padding: 10,
